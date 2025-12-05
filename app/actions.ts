@@ -13,9 +13,9 @@ export async function getAIData() {
         precio_justo_ia, 
         ahorro_pct,
         CASE 
-            WHEN ahorro_pct > 10 THEN '🔥 SUPER OFERTA'
-            WHEN ahorro_pct > 0 THEN '✅ Buen Precio'
-            ELSE '⚖️ Precio Justo'
+            WHEN ahorro_pct > 10 THEN 'SUPER OFERTA'
+            WHEN ahorro_pct > 0 THEN 'Buen Precio'
+            ELSE 'Precio Justo'
         END as veredicto
     FROM \`project-378f1530-eea8-4d9e-80f.price_monitor_dw.ai_market_analysis\`
   `;

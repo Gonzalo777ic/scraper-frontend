@@ -1,16 +1,16 @@
 "use client";
-import { ChevronDown, ChevronUp } from "lucide-react";
+
+import { 
+  ChevronDown, 
+  ChevronUp, 
+  ChevronsLeft, 
+  ChevronsRight, 
+  ChevronLeft, 
+  ChevronRight 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { DataTableToolbar } from "./data-table-toolbar";
 
 interface DataTableProps {
   data: any[];
@@ -61,206 +61,183 @@ export default function DataTable({
 
   return (
     <div className="space-y-4">
-      {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              Store: {selectedStore === "all" ? "All" : selectedStore}
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuLabel>Filter by Store</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup
-              value={selectedStore}
-              onValueChange={onStoreChange}
-            >
-              {stores.map((store) => (
-                <DropdownMenuRadioItem key={store} value={store}>
-                  {store === "all" ? "All Stores" : store}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      {/* Modularized Toolbar */}
+      <DataTableToolbar
+        stores={stores}
+        verdicts={verdicts}
+        selectedStore={selectedStore}
+        onStoreChange={onStoreChange}
+        priceRange={priceRange}
+        onPriceRangeChange={onPriceRangeChange}
+        verdict={verdict}
+        onVerdictChange={onVerdictChange}
+      />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              Verdict: {verdict === "all" ? "All" : verdict.substring(0, 8)}
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuLabel>Filter by Verdict</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup
-              value={verdict}
-              onValueChange={onVerdictChange}
-            >
-              {verdicts.map((v) => (
-                <DropdownMenuRadioItem key={v} value={v}>
-                  {v === "all" ? "All Verdicts" : v}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      {/* Table Structure */}
+      <div className="overflow-hidden rounded-lg border border-border">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border bg-muted">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground w-[80px]">
+                  Img
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                  Product
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                  Store
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                  Real Price
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                  AI Price
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                  Savings %
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                  Verdict
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedData.map((item, index) => (
+                <tr
+                  key={index}
+                  className="border-b border-border hover:bg-muted/50 transition-colors"
+                >
+                  {/* COLUMNA 1: IMAGEN */}
+                  <td className="px-6 py-4 align-middle">
+                    <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border border-border bg-white p-1">
+                      {item.image_url ? (
+                        <img 
+                          src={item.image_url} 
+                          alt="Product" 
+                          className="h-full w-full object-contain"
+                          onError={(e) => {
+                             // Fallback si la imagen falla al cargar
+                             (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gray-100 text-xs text-gray-400">
+                          N/A
+                        </div>
+                      )}
+                    </div>
+                  </td>
 
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-foreground">
-            Price Range:  
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="10000"
-            step="100"
-            value={priceRange[0]}
-            onChange={(e) =>
-              onPriceRangeChange([Number(e.target.value), priceRange[1]])
-            }
-            className="w-24"
-          />
-          <input
-            type="range"
-            min="0"
-            max="10000"
-            step="100"
-            value={priceRange[1]}
-            onChange={(e) =>
-              onPriceRangeChange([priceRange[0], Number(e.target.value)])
-            }
-            className="w-24"
-          />
-          <span className="text-sm text-muted-foreground">
-            ${priceRange[0]} - ${priceRange[1]}
-          </span>
+                  {/* COLUMNA 2: DETALLES PRODUCTO */}
+                  <td className="px-6 py-4">
+                    <div>
+                      <p className="font-medium text-foreground text-sm line-clamp-2 max-w-[300px]" title={item.name}>
+                        {item.name}
+                      </p>
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {item.specs &&
+                          Object.entries(item.specs).slice(0, 3).map(([key, value]) => (
+                            <Badge
+                              key={key}
+                              variant="secondary"
+                              className="text-[10px] h-5 px-1.5"
+                            >
+                              {key}: {String(value)}
+                            </Badge>
+                          ))}
+                      </div>
+                    </div>
+                  </td>
+                  
+                  <td className="px-6 py-4 text-sm text-foreground">
+                    {item.store}
+                  </td>
+
+                  <td className="px-6 py-4 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                    ${(item.price_real || 0).toLocaleString()}
+                  </td>
+
+                  <td className="px-6 py-4 text-sm text-muted-foreground line-through">
+                    ${(item.price_ia || 0).toLocaleString()}
+                  </td>
+
+                  <td
+                    className={`px-6 py-4 text-sm font-semibold ${getSavingsColor(
+                      item.ahorro_pct || 0
+                    )}`}
+                  >
+                    {(item.ahorro_pct || 0).toFixed(1)}%
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <Badge className={getVerdictColor(item.veredicto || "N/A")}>
+                      {item.veredicto || "Pendiente"}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-lg border border-border">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-border bg-muted">
-              <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                Product
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                Store
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                Real Price
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                AI Price
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                Savings %
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                Verdict
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedData.map((item, index) => (
-              <tr
-                key={index}
-                className="border-b border-border hover:bg-muted/50 transition-colors"
-              >
-                <td className="px-6 py-4">
-                  <div>
-                    <p className="font-medium text-foreground text-sm">
-                      {item.name}
-                    </p>
-                    <div className="mt-1 flex gap-1">
-                      {item.specs &&
-                        Object.entries(item.specs).map(([key, value]) => (
-                          <Badge
-                            key={key}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {key}: {String(value)}
-                          </Badge>
-                        ))}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-foreground">
-                  {item.store}
-                </td>
-
-                {/* CORRECCIÓN 1: Prevenir crash si price_real es null */}
-                <td className="px-6 py-4 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-                  ${(item.price_real || 0).toLocaleString()}
-                </td>
-
-                {/* CORRECCIÓN 2: Prevenir crash si price_ia es null */}
-                <td className="px-6 py-4 text-sm text-muted-foreground line-through">
-                  ${(item.price_ia || 0).toLocaleString()}
-                </td>
-
-                {/* CORRECCIÓN 3: Prevenir crash si ahorro_pct es null */}
-                <td
-                  className={`px-6 py-4 text-sm font-semibold ${getSavingsColor(
-                    item.ahorro_pct || 0
-                  )}`}
-                >
-                  {(item.ahorro_pct || 0).toFixed(1)}%
-                </td>
-
-                <td className="px-6 py-4">
-                  {/* CORRECCIÓN 4: Asegurar que veredicto sea string */}
-                  <Badge className={getVerdictColor(item.veredicto || "N/A")}>
-                    {item.veredicto || "Pendiente"}
-                  </Badge>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Showing {startIndex + 1} to{" "}
-          {Math.min(startIndex + ITEMS_PER_PAGE, data.length)} of {data.length}{" "}
-          products
+      {/* Pagination Optimizada para muchas páginas */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-2">
+        <p className="text-sm text-muted-foreground order-2 sm:order-1">
+          Showing <span className="font-medium">{startIndex + 1}</span> to{" "}
+          <span className="font-medium">{Math.min(startIndex + ITEMS_PER_PAGE, data.length)}</span> of{" "}
+          <span className="font-medium">{data.length}</span> products
         </p>
-        <div className="flex gap-2">
+        
+        <div className="flex items-center space-x-2 order-1 sm:order-2">
+          {/* Botón Primera Página */}
           <Button
             variant="outline"
-            size="sm"
+            className="h-8 w-8 p-0 lg:flex"
+            onClick={() => onPageChange(1)}
+            disabled={currentPage === 1}
+          >
+            <span className="sr-only">Go to first page</span>
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+          
+          {/* Botón Anterior */}
+          <Button
+            variant="outline"
+            className="h-8 w-8 p-0"
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
           >
-            <ChevronUp className="h-4 w-4" />
+            <span className="sr-only">Go to previous page</span>
+            <ChevronLeft className="h-4 w-4" />
           </Button>
-          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map(
-            (page) => (
-              <Button
-                key={page}
-                variant={currentPage === page ? "default" : "outline"}
-                size="sm"
-                onClick={() => onPageChange(page)}
-              >
-                {page}
-              </Button>
-            )
-          )}
+
+          {/* Indicador de Página */}
+          <div className="flex items-center justify-center text-sm font-medium w-[100px]">
+            Page {currentPage} of {totalPages}
+          </div>
+
+          {/* Botón Siguiente */}
           <Button
             variant="outline"
-            size="sm"
+            className="h-8 w-8 p-0"
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
           >
-            <ChevronDown className="h-4 w-4" />
+            <span className="sr-only">Go to next page</span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+
+          {/* Botón Última Página */}
+          <Button
+            variant="outline"
+            className="h-8 w-8 p-0 lg:flex"
+            onClick={() => onPageChange(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            <span className="sr-only">Go to last page</span>
+            <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
