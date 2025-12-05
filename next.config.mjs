@@ -11,7 +11,10 @@ const nextConfig = {
     return [
       {
         source: '/api-proxy/:path*',
-        destination: 'http://34.118.235.125/:path*', // Tu IP de GCP
+        // CORRECCIÓN CRÍTICA:
+        // 1. Usamos la IP del LoadBalancer (34.61.235.12)
+        // 2. Agregamos el prefijo '/api' porque tu infraestructura lo requiere
+        destination: 'http://34.61.235.12/api/:path*', 
       },
     ]
   },
