@@ -19,7 +19,7 @@ interface ProductImageDialogProps {
     export function ProductImageDialog({ imageUrl, productName }: ProductImageDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Si no hay imagen, mostramos el placeholder y no renderizamos el Dialog
+
   if (!imageUrl) {
     return (
       <div className="flex h-12 w-12 items-center justify-center rounded-md border border-border bg-muted/50 text-xs text-muted-foreground">
@@ -45,7 +45,7 @@ interface ProductImageDialogProps {
       </DialogTrigger>
       <DialogContent className="max-w-3xl border-none bg-transparent p-0 shadow-none sm:max-w-3xl">
         <div className="relative flex flex-col items-center justify-center">
-          {/* Botón cerrar flotante */}
+          {}
           <DialogTitle className="sr-only">{productName}</DialogTitle>
           <DialogClose asChild>
             <Button
@@ -58,7 +58,7 @@ interface ProductImageDialogProps {
             </Button>
           </DialogClose>
           
-          {/* Imagen Grande */}
+          {}
           <div className="overflow-hidden rounded-lg bg-white p-4 shadow-2xl">
             <img
               src={imageUrl}

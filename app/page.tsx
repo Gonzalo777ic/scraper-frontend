@@ -6,7 +6,7 @@ import KPICards from "@/components/dashboard/kpi-cards";
 import Charts from "@/components/dashboard/charts";
 import DataTable from "@/components/dashboard/data-table";
 
-// Definir la interfaz completa
+
 interface Product {
   product_id: string;
   name: string;
@@ -14,14 +14,14 @@ interface Product {
   store: string;
   image_url: string | null;
   timestamp: string;
-  // Campos de IA
+
   veredicto?: string;
   price_real?: number;
   price_ia?: number;
   ahorro_pct?: number;
 }
 
-// Interfaz para la respuesta de BigQuery
+
 interface AnalysisData {
   product_id: string;
   precio_justo_ia: number;
@@ -36,17 +36,17 @@ export default function PriceDashboard() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStore, setSelectedStore] = useState("all");
-  // Amplié el rango por defecto para ver laptops caras
+
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 15000]);
   const [verdict, setVerdict] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // --- FETCH DE DATOS REALES (POSTGRES + BIGQUERY) ---
+
   useEffect(() => {
     async function fetchData() {
       try {
         const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL || "http://34.118.235.125"; // Asegúrate de que esta IP sea la correcta
+          process.env.NEXT_PUBLIC_API_URL || "http://34.118.235.125";
 
         console.log("Iniciando carga de datos desde:", apiUrl);
 
@@ -64,8 +64,8 @@ export default function PriceDashboard() {
         if (analysisRes.ok) {
           const result = await analysisRes.json();
 
-          // --- AQUÍ ESTÁ EL ARREGLO ---
-          // Verificamos si lo que llegó es realmente un Array (Lista)
+
+
           if (Array.isArray(result)) {
             rawAnalysis = result;
           } else {
@@ -75,24 +75,26 @@ export default function PriceDashboard() {
           console.warn("El endpoint /analysis falló.");
         }
 
-        // 2. Crear mapa (Ahora seguro porque rawAnalysis siempre será un array)
+
         const analysisMap = new Map(
           rawAnalysis.map((item) => [item.product_id, item])
         );
 
-        // 3. Combinar y APLICAR CONVERSIÓN DE MONEDA
+
         const mergedData = rawPrices.map((item: any) => {
           const aiData = analysisMap.get(item.product_id);
 
-          // --- LÓGICA DE CONVERSIÓN ---
-          // Si la tienda es Amazon, multiplicamos por 3.35
+
+
           const isAmazon = item.store.toLowerCase().includes("amazon");
           const conversionRate = 3.35;
-          const adjustedPrice = isAmazon ? item.price * conversionRate : item.price;
+          const adjustedPrice = isAmazon
+            ? item.price * conversionRate
+            : item.price;
 
           return {
             ...item,
-            price_real: adjustedPrice, // Usamos el precio ajustado
+            price_real: adjustedPrice,
             price_ia: aiData ? aiData.precio_justo_ia : null,
             ahorro_pct: aiData ? aiData.ahorro_pct : 0,
             veredicto: aiData ? aiData.veredicto : "⏳ Pendiente",
@@ -111,26 +113,44 @@ export default function PriceDashboard() {
     fetchData();
   }, []);
 
-  // Filter logic
+
+
+
   const filteredData = useMemo(() => {
     return data.filter((item) => {
+
       const matchesSearch =
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.product_id.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStore =
-        selectedStore === "all" || item.store === selectedStore;
+
+
+      let matchesStore = true;
+
+      if (selectedStore === "all") {
+        matchesStore = true;
+      } else if (selectedStore.startsWith("GROUP_")) {
+
+        const groupName = selectedStore.replace("GROUP_", "").toLowerCase();
+
+        matchesStore = item.store.toLowerCase().includes(groupName);
+      } else {
+
+        matchesStore = item.store === selectedStore;
+      }
+
+
       const matchesPrice =
         (item.price_real || 0) >= priceRange[0] &&
         (item.price_real || 0) <= priceRange[1];
 
-      // Filtro de Veredicto
+
       const matchesVerdict = verdict === "all" || item.veredicto === verdict;
 
       return matchesSearch && matchesStore && matchesPrice && matchesVerdict;
     });
   }, [data, searchQuery, selectedStore, priceRange, verdict]);
 
-  // Get unique stores & verdicts
+
   const stores = ["all", ...new Set(data.map((item) => item.store))];
   const verdicts = [
     "all",
@@ -140,16 +160,21 @@ export default function PriceDashboard() {
       )
     ),
   ];
-  
-  // KPI calculations
+
+
   const kpis = {
     totalProducts: data.length,
     opportunities: data.filter((d) => (d.ahorro_pct || 0) > 10).length,
-    // Calculamos la tienda más barata basándonos en el precio REAL (ya convertido)
+
     cheapestStore:
       data.length > 0
-        ? data.reduce((min, p) => ((p.price_real || p.price) < (min.price_real || min.price) ? p : min), data[0])
-            .store
+        ? data.reduce(
+            (min, p) =>
+              (p.price_real || p.price) < (min.price_real || min.price)
+                ? p
+                : min,
+            data[0]
+          ).store
         : "-",
   };
 

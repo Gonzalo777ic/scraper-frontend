@@ -9,9 +9,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input"; // Asegúrate de tener este componente
+import { Input } from "@/components/ui/input";
 import { DataTableToolbar } from "./data-table-toolbar";
-import { ProductImageDialog } from "./product-image-dialog"; // <--- Importamos el componente nuevo
+import { ProductImageDialog } from "./product-image-dialog";
 
 interface DataTableProps {
   data: any[];
@@ -25,6 +25,8 @@ interface DataTableProps {
   onVerdictChange: (verdict: string) => void;
   currentPage: number;
   onPageChange: (page: number) => void;
+  searchQuery?: string;
+  onSearchChange?: (val: string) => void;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -41,15 +43,17 @@ export default function DataTable({
   onVerdictChange,
   currentPage,
   onPageChange,
+  searchQuery,
+    onSearchChange
 }: DataTableProps) {
   const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  // Estado local para el input de "Ir a página"
+
   const [pageInput, setPageInput] = useState(currentPage.toString());
 
-  // Sincronizar el input cuando cambia la página desde fuera (botones)
+
   useEffect(() => {
     setPageInput(currentPage.toString());
   }, [currentPage]);
@@ -60,7 +64,7 @@ export default function DataTable({
     if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
       onPageChange(pageNumber);
     } else {
-      // Si es inválido, reseteamos al actual
+
       setPageInput(currentPage.toString());
     }
   };
@@ -81,7 +85,7 @@ export default function DataTable({
 
   return (
     <div className="space-y-4">
-      {/* Modularized Toolbar */}
+      {}
       <DataTableToolbar
         stores={stores}
         verdicts={verdicts}
@@ -91,9 +95,11 @@ export default function DataTable({
         onPriceRangeChange={onPriceRangeChange}
         verdict={verdict}
         onVerdictChange={onVerdictChange}
+        searchQuery={searchQuery}
+        onSearchChange={onSearchChange}
       />
 
-      {/* Table Structure */}
+      {}
       <div className="overflow-hidden rounded-lg border border-border">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -128,7 +134,7 @@ export default function DataTable({
                   key={index}
                   className="border-b border-border hover:bg-muted/50 transition-colors"
                 >
-                  {/* COLUMNA 1: IMAGEN MODULAR */}
+                  {}
                   <td className="px-6 py-4 align-middle">
                     <ProductImageDialog 
                       imageUrl={item.image_url} 
@@ -136,7 +142,7 @@ export default function DataTable({
                     />
                   </td>
 
-                  {/* COLUMNA 2: DETALLES PRODUCTO */}
+                  {}
                   <td className="px-6 py-4">
                     <div>
                       <p
@@ -194,7 +200,7 @@ export default function DataTable({
         </div>
       </div>
 
-      {/* Pagination Optimizada + Input de salto */}
+      {}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-2">
         <p className="text-sm text-muted-foreground order-3 md:order-1">
           Showing <span className="font-medium">{startIndex + 1}</span> to{" "}
@@ -205,7 +211,7 @@ export default function DataTable({
         </p>
 
         <div className="flex items-center gap-2 order-2">
-          {/* Botones de Navegación */}
+          {}
           <div className="flex items-center space-x-1">
             <Button
               variant="outline"
@@ -227,7 +233,7 @@ export default function DataTable({
             </Button>
           </div>
 
-          {/* INPUT PARA SALTAR DE PÁGINA */}
+          {}
           <form onSubmit={handlePageSubmit} className="flex items-center gap-2 mx-2">
             <span className="text-sm text-muted-foreground whitespace-nowrap">Page</span>
             <Input

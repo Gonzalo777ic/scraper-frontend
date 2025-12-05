@@ -21,7 +21,7 @@ interface ChartsProps {
 
 export default function Charts({ data }: ChartsProps) {
   
-  // 1. Función para limpiar y agrupar nombres de tiendas
+
   const normalizeStore = (rawName: string) => {
     const lower = rawName.toLowerCase();
     
@@ -36,35 +36,35 @@ export default function Charts({ data }: ChartsProps) {
     if (lower.includes("efe")) return "Tiendas Efe";
     if (lower.includes("coolbox")) return "Coolbox";
     
-    // Si es una tienda específica pequeña, dejar su nombre o agrupar en "Otros"
-    // return "Otros"; // Opcional: descomentar si quieres agrupar el resto
+
+
     return rawName;
   };
 
-  // 2. Calcular promedio agrupado
+
   const storeGroups = data.reduce((acc: Record<string, number[]>, item) => {
     const cleanName = normalizeStore(item.store);
     
     if (!acc[cleanName]) {
       acc[cleanName] = [];
     }
-    // Usamos price_real o 0 para evitar errores
+
     acc[cleanName].push(item.price_real || 0);
     return acc;
   }, {});
 
-  // 3. Convertir a formato para el gráfico
+
   const chartData = Object.entries(storeGroups)
     .map(([store, prices]) => ({
       store,
       promedio: Math.round(prices.reduce((a, b) => a + b, 0) / prices.length),
-      count: prices.length // Dato extra útil para tooltip
+      count: prices.length
     }))
-    .sort((a, b) => b.promedio - a.promedio); // Ordenar de mayor a menor precio
+    .sort((a, b) => b.promedio - a.promedio);
 
-  // Scatter data (Aumenté un poco el sample para que se vea mejor)
+
   const scatterData = data
-    .filter(item => item.price_ia > 0) // Solo mostrar los que tienen precio IA ya calculado
+    .filter(item => item.price_ia > 0)
     .slice(0, 50)
     .map((item) => ({
       priceReal: item.price_real,
@@ -75,7 +75,7 @@ export default function Charts({ data }: ChartsProps) {
 
   return (
     <div className="mt-8 grid gap-6 lg:grid-cols-2">
-      {/* Bar Chart - Precio Promedio por Tienda (Agrupado) */}
+      {}
       <Card>
         <CardHeader>
           <CardTitle>Precio Promedio por Cadena</CardTitle>
@@ -110,7 +110,7 @@ export default function Charts({ data }: ChartsProps) {
         </CardContent>
       </Card>
 
-{/* Scatter Chart Mejorado */}
+{}
       <Card>
         <CardHeader>
           <CardTitle>Análisis de Valor: Real vs IA</CardTitle>
@@ -123,7 +123,7 @@ export default function Charts({ data }: ChartsProps) {
             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid strokeDasharray="3 3" />
               
-              {/* Ejes */}
+              {}
               <XAxis 
                 dataKey="priceReal" 
                 name="Precio Real" 
@@ -157,8 +157,8 @@ export default function Charts({ data }: ChartsProps) {
                 }}
               />
 
-              {/* Línea de Referencia (Diagonal Perfecta) */}
-              {/* Si un punto está en esta línea, el precio es 100% justo */}
+              {}
+              {}
               <ReferenceLine 
                 segment={[{ x: 0, y: 0 }, { x: 15000, y: 15000 }]} 
                 stroke="gray" 
@@ -168,13 +168,13 @@ export default function Charts({ data }: ChartsProps) {
 
               <Scatter name="Productos" data={scatterData}>
                 {scatterData.map((entry, index) => {
-                  // Lógica de color
-                  const isDeal = entry.priceReal < entry.priceIA * 0.95; // 5% más barato que IA
-                  const isOverpriced = entry.priceReal > entry.priceIA * 1.15; // 15% más caro que IA
+
+                  const isDeal = entry.priceReal < entry.priceIA * 0.95;
+                  const isOverpriced = entry.priceReal > entry.priceIA * 1.15;
                   
-                  let color = "hsl(var(--chart-1))"; // Azul por defecto (Justo)
-                  if (isDeal) color = "#10b981"; // Verde Esmeralda (Oferta)
-                  if (isOverpriced) color = "#ef4444"; // Rojo (Caro)
+                  let color = "hsl(var(--chart-1))";
+                  if (isDeal) color = "#10b981";
+                  if (isOverpriced) color = "#ef4444";
 
                   return <Cell key={`cell-${index}`} fill={color} />;
                 })}

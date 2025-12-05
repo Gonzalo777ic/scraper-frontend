@@ -15,7 +15,7 @@ export default function Header({ searchQuery, onSearchChange }: HeaderProps) {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Prevent hydration mismatch
+
   if (!mounted) {
     setMounted(true)
   }
@@ -24,7 +24,7 @@ export default function Header({ searchQuery, onSearchChange }: HeaderProps) {
     <header className="border-b border-border bg-card shadow-sm">
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
-          {/* Logo & Title */}
+          {}
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-emerald-600">
               <span className="text-lg font-bold text-white">₿</span>
@@ -35,7 +35,7 @@ export default function Header({ searchQuery, onSearchChange }: HeaderProps) {
             </div>
           </div>
 
-          {/* Search Bar */}
+          {}
           <div className="flex flex-1 items-center gap-2 px-4">
             <Search className="h-4 w-4 text-muted-foreground" />
             <Input
@@ -46,7 +46,7 @@ export default function Header({ searchQuery, onSearchChange }: HeaderProps) {
             />
           </div>
 
-          {/* Dark Mode Toggle */}
+          {}
           <Button
             variant="ghost"
             size="icon"

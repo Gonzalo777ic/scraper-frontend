@@ -4,7 +4,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 export async function getAIData() {
   const bigquery = new BigQuery({
       projectId: 'project-378f1530-eea8-4d9e-80f',
-      // keyFilename: 'path/to/your/service-account.json' // Si lo corres local sin gcloud login
+
   });
 
   const query = `
