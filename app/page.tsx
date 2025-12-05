@@ -69,9 +69,7 @@ export default function PriceDashboard() {
           if (Array.isArray(result)) {
             rawAnalysis = result;
           } else {
-            // Si llega un objeto (probablemente un error), lo mostramos en consola y seguimos sin IA
             console.error("⚠️ Error en respuesta de IA (BigQuery):", result);
-            // rawAnalysis se queda como []
           }
         } else {
           console.warn("El endpoint /analysis falló.");
@@ -82,13 +80,19 @@ export default function PriceDashboard() {
           rawAnalysis.map((item) => [item.product_id, item])
         );
 
-        // 3. Combinar
+        // 3. Combinar y APLICAR CONVERSIÓN DE MONEDA
         const mergedData = rawPrices.map((item: any) => {
           const aiData = analysisMap.get(item.product_id);
 
+          // --- LÓGICA DE CONVERSIÓN ---
+          // Si la tienda es Amazon, multiplicamos por 3.35
+          const isAmazon = item.store.toLowerCase().includes("amazon");
+          const conversionRate = 3.35;
+          const adjustedPrice = isAmazon ? item.price * conversionRate : item.price;
+
           return {
             ...item,
-            price_real: item.price,
+            price_real: adjustedPrice, // Usamos el precio ajustado
             price_ia: aiData ? aiData.precio_justo_ia : null,
             ahorro_pct: aiData ? aiData.ahorro_pct : 0,
             veredicto: aiData ? aiData.veredicto : "⏳ Pendiente",
@@ -119,7 +123,7 @@ export default function PriceDashboard() {
         (item.price_real || 0) >= priceRange[0] &&
         (item.price_real || 0) <= priceRange[1];
 
-      // Filtro de Veredicto (Nuevo)
+      // Filtro de Veredicto
       const matchesVerdict = verdict === "all" || item.veredicto === verdict;
 
       return matchesSearch && matchesStore && matchesPrice && matchesVerdict;
@@ -136,13 +140,15 @@ export default function PriceDashboard() {
       )
     ),
   ];
+  
   // KPI calculations
   const kpis = {
     totalProducts: data.length,
-    opportunities: data.filter((d) => (d.ahorro_pct || 0) > 10).length, // Ofertas reales detectadas
+    opportunities: data.filter((d) => (d.ahorro_pct || 0) > 10).length,
+    // Calculamos la tienda más barata basándonos en el precio REAL (ya convertido)
     cheapestStore:
       data.length > 0
-        ? data.reduce((min, p) => (p.price < min.price ? p : min), data[0])
+        ? data.reduce((min, p) => ((p.price_real || p.price) < (min.price_real || min.price) ? p : min), data[0])
             .store
         : "-",
   };

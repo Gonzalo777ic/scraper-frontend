@@ -111,7 +111,7 @@ export default function DataTable({
 
         <div className="flex items-center gap-2">
           <label className="text-sm font-medium text-foreground">
-            Price Range:
+            Price Range:  
           </label>
           <input
             type="range"
