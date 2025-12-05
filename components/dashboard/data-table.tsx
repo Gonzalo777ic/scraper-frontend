@@ -1,16 +1,17 @@
 "use client";
 
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  ChevronsLeft, 
-  ChevronsRight, 
-  ChevronLeft, 
-  ChevronRight 
+import { useState, useEffect } from "react";
+import {
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input"; // Asegúrate de tener este componente
 import { DataTableToolbar } from "./data-table-toolbar";
+import { ProductImageDialog } from "./product-image-dialog"; // <--- Importamos el componente nuevo
 
 interface DataTableProps {
   data: any[];
@@ -44,6 +45,25 @@ export default function DataTable({
   const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  // Estado local para el input de "Ir a página"
+  const [pageInput, setPageInput] = useState(currentPage.toString());
+
+  // Sincronizar el input cuando cambia la página desde fuera (botones)
+  useEffect(() => {
+    setPageInput(currentPage.toString());
+  }, [currentPage]);
+
+  const handlePageSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const pageNumber = parseInt(pageInput);
+    if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
+      onPageChange(pageNumber);
+    } else {
+      // Si es inválido, reseteamos al actual
+      setPageInput(currentPage.toString());
+    }
+  };
 
   const getVerdictColor = (veredicto: string) => {
     if (veredicto.includes("SUPER"))
@@ -108,48 +128,40 @@ export default function DataTable({
                   key={index}
                   className="border-b border-border hover:bg-muted/50 transition-colors"
                 >
-                  {/* COLUMNA 1: IMAGEN */}
+                  {/* COLUMNA 1: IMAGEN MODULAR */}
                   <td className="px-6 py-4 align-middle">
-                    <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border border-border bg-white p-1">
-                      {item.image_url ? (
-                        <img 
-                          src={item.image_url} 
-                          alt="Product" 
-                          className="h-full w-full object-contain"
-                          onError={(e) => {
-                             // Fallback si la imagen falla al cargar
-                             (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gray-100 text-xs text-gray-400">
-                          N/A
-                        </div>
-                      )}
-                    </div>
+                    <ProductImageDialog 
+                      imageUrl={item.image_url} 
+                      productName={item.name} 
+                    />
                   </td>
 
                   {/* COLUMNA 2: DETALLES PRODUCTO */}
                   <td className="px-6 py-4">
                     <div>
-                      <p className="font-medium text-foreground text-sm line-clamp-2 max-w-[300px]" title={item.name}>
+                      <p
+                        className="font-medium text-foreground text-sm line-clamp-2 max-w-[300px]"
+                        title={item.name}
+                      >
                         {item.name}
                       </p>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {item.specs &&
-                          Object.entries(item.specs).slice(0, 3).map(([key, value]) => (
-                            <Badge
-                              key={key}
-                              variant="secondary"
-                              className="text-[10px] h-5 px-1.5"
-                            >
-                              {key}: {String(value)}
-                            </Badge>
-                          ))}
+                          Object.entries(item.specs)
+                            .slice(0, 3)
+                            .map(([key, value]) => (
+                              <Badge
+                                key={key}
+                                variant="secondary"
+                                className="text-[10px] h-5 px-1.5"
+                              >
+                                {key}: {String(value)}
+                              </Badge>
+                            ))}
                       </div>
                     </div>
                   </td>
-                  
+
                   <td className="px-6 py-4 text-sm text-foreground">
                     {item.store}
                   </td>
@@ -182,63 +194,73 @@ export default function DataTable({
         </div>
       </div>
 
-      {/* Pagination Optimizada para muchas páginas */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-2">
-        <p className="text-sm text-muted-foreground order-2 sm:order-1">
+      {/* Pagination Optimizada + Input de salto */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-2">
+        <p className="text-sm text-muted-foreground order-3 md:order-1">
           Showing <span className="font-medium">{startIndex + 1}</span> to{" "}
-          <span className="font-medium">{Math.min(startIndex + ITEMS_PER_PAGE, data.length)}</span> of{" "}
-          <span className="font-medium">{data.length}</span> products
+          <span className="font-medium">
+            {Math.min(startIndex + ITEMS_PER_PAGE, data.length)}
+          </span>{" "}
+          of <span className="font-medium">{data.length}</span> products
         </p>
-        
-        <div className="flex items-center space-x-2 order-1 sm:order-2">
-          {/* Botón Primera Página */}
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0 lg:flex"
-            onClick={() => onPageChange(1)}
-            disabled={currentPage === 1}
-          >
-            <span className="sr-only">Go to first page</span>
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
-          
-          {/* Botón Anterior */}
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-          >
-            <span className="sr-only">Go to previous page</span>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
 
-          {/* Indicador de Página */}
-          <div className="flex items-center justify-center text-sm font-medium w-[100px]">
-            Page {currentPage} of {totalPages}
+        <div className="flex items-center gap-2 order-2">
+          {/* Botones de Navegación */}
+          <div className="flex items-center space-x-1">
+            <Button
+              variant="outline"
+              className="h-8 w-8 p-0 lg:flex"
+              onClick={() => onPageChange(1)}
+              disabled={currentPage === 1}
+            >
+              <span className="sr-only">First page</span>
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="h-8 w-8 p-0"
+              onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+            >
+              <span className="sr-only">Previous page</span>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
           </div>
 
-          {/* Botón Siguiente */}
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
-          >
-            <span className="sr-only">Go to next page</span>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          {/* INPUT PARA SALTAR DE PÁGINA */}
+          <form onSubmit={handlePageSubmit} className="flex items-center gap-2 mx-2">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">Page</span>
+            <Input
+              type="number"
+              min={1}
+              max={totalPages}
+              value={pageInput}
+              onChange={(e) => setPageInput(e.target.value)}
+              className="h-8 w-14 text-center px-1"
+            />
+            <span className="text-sm text-muted-foreground whitespace-nowrap">of {totalPages}</span>
+          </form>
 
-          {/* Botón Última Página */}
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0 lg:flex"
-            onClick={() => onPageChange(totalPages)}
-            disabled={currentPage === totalPages}
-          >
-            <span className="sr-only">Go to last page</span>
-            <ChevronsRight className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center space-x-1">
+            <Button
+              variant="outline"
+              className="h-8 w-8 p-0"
+              onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+            >
+              <span className="sr-only">Next page</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="h-8 w-8 p-0 lg:flex"
+              onClick={() => onPageChange(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              <span className="sr-only">Last page</span>
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
