@@ -45,10 +45,14 @@ export default function PriceDashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL || "http://34.118.235.125";
+        //const apiUrl =
+        //  process.env.NEXT_PUBLIC_API_URL || "http://34.118.235.125";
 
-        console.log("Iniciando carga de datos desde:", apiUrl);
+        //console.log("Iniciando carga de datos desde:", apiUrl);
+
+        const apiUrl = '/api-proxy'; 
+        
+        console.log("Iniciando carga de datos desde Proxy:", apiUrl);
 
         const [pricesRes, analysisRes] = await Promise.all([
           fetch(`${apiUrl}/prices`),
