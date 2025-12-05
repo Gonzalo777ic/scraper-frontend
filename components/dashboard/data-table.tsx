@@ -106,96 +106,99 @@ export default function DataTable({
             <thead>
               <tr className="border-b border-border bg-muted">
                 <th className="px-6 py-3 text-left text-sm font-semibold text-foreground w-[80px]">
-                  Img
+                  Imagen
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                  Product
+                  Producto
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                  Store
+                  Tienda
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                  Real Price
+                  Precio Real
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                  AI Price
+                  Precio predicho por IA
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                  Savings %
+                  Ahorro %
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
-                  Verdict
+                  Verdicto
                 </th>
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map((item, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-border hover:bg-muted/50 transition-colors"
-                >
-                  {}
-                  <td className="px-6 py-4 align-middle">
-                    <ProductImageDialog 
-                      imageUrl={item.image_url} 
-                      productName={item.name} 
-                    />
-                  </td>
+            {paginatedData.map((item, index) => (
+              <tr
+                key={index}
+                className="border-b border-border hover:bg-muted/50 transition-colors"
+              >
+                {/* COLUMNA 1: IMAGEN MODULAR */}
+                <td className="px-6 py-4 align-middle">
+                  <ProductImageDialog
+                    imageUrl={item.image_url}
+                    productName={item.name}
+                  />
+                </td>
 
-                  {}
-                  <td className="px-6 py-4">
-                    <div>
-                      <p
-                        className="font-medium text-foreground text-sm line-clamp-2 max-w-[300px]"
-                        title={item.name}
-                      >
-                        {item.name}
-                      </p>
-                      <div className="mt-1 flex flex-wrap gap-1">
-                        {item.specs &&
-                          Object.entries(item.specs)
-                            .slice(0, 3)
-                            .map(([key, value]) => (
-                              <Badge
-                                key={key}
-                                variant="secondary"
-                                className="text-[10px] h-5 px-1.5"
-                              >
-                                {key}: {String(value)}
-                              </Badge>
-                            ))}
-                      </div>
+                {/* COLUMNA 2: DETALLES PRODUCTO */}
+                <td className="px-6 py-4">
+                  <div>
+                    <p
+                      className="font-medium text-foreground text-sm line-clamp-2 max-w-[300px]"
+                      title={item.name}
+                    >
+                      {item.name}
+                    </p>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {item.specs &&
+                        Object.entries(item.specs)
+                          .slice(0, 3)
+                          .map(([key, value]) => (
+                            <Badge
+                              key={key}
+                              variant="secondary"
+                              className="text-[10px] h-5 px-1.5"
+                            >
+                              {key}: {String(value)}
+                            </Badge>
+                          ))}
                     </div>
-                  </td>
+                  </div>
+                </td>
 
-                  <td className="px-6 py-4 text-sm text-foreground">
-                    {item.store}
-                  </td>
+                <td className="px-6 py-4 text-sm text-foreground">
+                  {item.store}
+                </td>
 
-                  <td className="px-6 py-4 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-                    ${(item.price_real || 0).toLocaleString()}
-                  </td>
+                {/* --- CAMBIO AQUÍ: PRECIO REAL --- */}
+                <td className="px-6 py-4 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                  {/* Cambiamos '$' por 'S/ ' y forzamos 2 decimales */}
+                  S/ {(item.price_real || 0).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </td>
 
-                  <td className="px-6 py-4 text-sm text-muted-foreground line-through">
-                    ${(item.price_ia || 0).toLocaleString()}
-                  </td>
+                {/* --- CAMBIO AQUÍ: PRECIO IA --- */}
+                <td className="px-6 py-4 text-sm font-medium text-blue-600 dark:text-blue-400">
+                   S/ {(item.price_ia || 0).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </td>
 
-                  <td
-                    className={`px-6 py-4 text-sm font-semibold ${getSavingsColor(
-                      item.ahorro_pct || 0
-                    )}`}
-                  >
-                    {(item.ahorro_pct || 0).toFixed(1)}%
-                  </td>
+                <td
+                  className={`px-6 py-4 text-sm font-semibold ${getSavingsColor(
+                    item.ahorro_pct || 0
+                  )}`}
+                >
+                  {(item.ahorro_pct || 0).toFixed(1)}%
+                </td>
 
-                  <td className="px-6 py-4">
-                    <Badge className={getVerdictColor(item.veredicto || "N/A")}>
-                      {item.veredicto || "Pendiente"}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                <td className="px-6 py-4">
+                  <Badge className={getVerdictColor(item.veredicto || "N/A")}>
+                    {item.veredicto || "Pendiente"}
+                  </Badge>
+                </td>
+              </tr>
+            ))}
+          </tbody>
           </table>
         </div>
       </div>
