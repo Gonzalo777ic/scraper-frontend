@@ -134,7 +134,7 @@ export default function DataTable({
                 key={index}
                 className="border-b border-border hover:bg-muted/50 transition-colors"
               >
-                {/* COLUMNA 1: IMAGEN MODULAR */}
+                {}
                 <td className="px-6 py-4 align-middle">
                   <ProductImageDialog
                     imageUrl={item.image_url}
@@ -142,7 +142,7 @@ export default function DataTable({
                   />
                 </td>
 
-                {/* COLUMNA 2: DETALLES PRODUCTO */}
+                {}
                 <td className="px-6 py-4">
                   <div>
                     <p
@@ -172,13 +172,13 @@ export default function DataTable({
                   {item.store}
                 </td>
 
-                {/* --- CAMBIO AQUÍ: PRECIO REAL --- */}
+                {}
                 <td className="px-6 py-4 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-                  {/* Cambiamos '$' por 'S/ ' y forzamos 2 decimales */}
+                  {}
                   S/ {(item.price_real || 0).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </td>
 
-                {/* --- CAMBIO AQUÍ: PRECIO IA --- */}
+                {}
                 <td className="px-6 py-4 text-sm font-medium text-blue-600 dark:text-blue-400">
                    S/ {(item.price_ia || 0).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </td>

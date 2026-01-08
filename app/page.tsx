@@ -73,7 +73,7 @@ export default function PriceDashboard() {
           if (Array.isArray(result)) {
             rawAnalysis = result;
           } else {
-            console.error("⚠️ Error en respuesta de IA (BigQuery):", result);
+            console.error("️ Error en respuesta de IA (BigQuery):", result);
           }
         } else {
           console.warn("El endpoint /analysis falló.");
@@ -101,7 +101,7 @@ export default function PriceDashboard() {
             price_real: adjustedPrice,
             price_ia: aiData ? aiData.precio_justo_ia : null,
             ahorro_pct: aiData ? aiData.ahorro_pct : 0,
-            veredicto: aiData ? aiData.veredicto : "⏳ Pendiente",
+            veredicto: aiData ? aiData.veredicto : " Pendiente",
           };
         });
 

@@ -6,7 +6,7 @@ export const mockPriceData = [
     price_real: 4500,
     price_ia: 5200,
     ahorro_pct: 15.5,
-    veredicto: "🔥 SUPER OFERTA",
+    veredicto: " SUPER OFERTA",
     specs: { cpu: "Core i7", ram: "16GB", gpu: "RTX 4060" },
   },
   {
@@ -26,7 +26,7 @@ export const mockPriceData = [
     price_real: 2900,
     price_ia: 3500,
     ahorro_pct: 17.1,
-    veredicto: "🔥 SUPER OFERTA",
+    veredicto: " SUPER OFERTA",
     specs: { cpu: "Ryzen 7", ram: "16GB", gpu: "Integrated" },
   },
   {
@@ -56,7 +56,7 @@ export const mockPriceData = [
     price_real: 2100,
     price_ia: 2400,
     ahorro_pct: 12.5,
-    veredicto: "🔥 SUPER OFERTA",
+    veredicto: " SUPER OFERTA",
     specs: { cpu: "Core i5", ram: "8GB", gpu: "Integrated" },
   },
   {
@@ -76,7 +76,7 @@ export const mockPriceData = [
     price_real: 4200,
     price_ia: 5100,
     ahorro_pct: 17.6,
-    veredicto: "🔥 SUPER OFERTA",
+    veredicto: " SUPER OFERTA",
     specs: { cpu: "Core i7", ram: "16GB", gpu: "RTX 4050" },
   },
   {
@@ -106,7 +106,7 @@ export const mockPriceData = [
     price_real: 2700,
     price_ia: 3400,
     ahorro_pct: 20.6,
-    veredicto: "🔥 SUPER OFERTA",
+    veredicto: " SUPER OFERTA",
     specs: { cpu: "Core i7", ram: "16GB", gpu: "Integrated" },
   },
   {
@@ -126,7 +126,7 @@ export const mockPriceData = [
     price_real: 2300,
     price_ia: 2800,
     ahorro_pct: 17.9,
-    veredicto: "🔥 SUPER OFERTA",
+    veredicto: " SUPER OFERTA",
     specs: { cpu: "Snapdragon", ram: "12GB", gpu: "Adreno" },
   },
   {
@@ -156,7 +156,7 @@ export const mockPriceData = [
     price_real: 1800,
     price_ia: 2100,
     ahorro_pct: 14.3,
-    veredicto: "🔥 SUPER OFERTA",
+    veredicto: " SUPER OFERTA",
     specs: { cpu: "Ryzen 5", ram: "8GB", gpu: "Integrated" },
   },
   {
@@ -176,7 +176,7 @@ export const mockPriceData = [
     price_real: 2400,
     price_ia: 2900,
     ahorro_pct: 17.2,
-    veredicto: "🔥 SUPER OFERTA",
+    veredicto: " SUPER OFERTA",
     specs: { cpu: "Core i5", ram: "8GB", gpu: "Integrated" },
   },
   {

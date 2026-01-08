@@ -110,7 +110,7 @@ export function DataTableToolbar({
               onValueChange={onStoreChange}
             >
               <DropdownMenuRadioItem value="all" className="font-bold">
-                🌍 All Stores
+                 All Stores
               </DropdownMenuRadioItem>
               
               <DropdownMenuSeparator />
