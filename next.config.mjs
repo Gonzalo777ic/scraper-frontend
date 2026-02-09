@@ -11,10 +11,10 @@ const nextConfig = {
     return [
       {
         source: '/api-proxy/:path*',
-        // CORRECCIÓN CRÍTICA:
-        // 1. Usamos la IP del LoadBalancer (34.61.235.12)
-        // 2. Agregamos el prefijo '/api' porque tu infraestructura lo requiere
-        destination: 'http://34.61.235.12/api/:path*', 
+        // 1. Usamos la URL segura de Cloud Run (HTTPS).
+        // 2. QUITAMOS '/api' del destino, porque en Cloud Run tu app escucha en la raíz.
+        //    Ejemplo: /api-proxy/prices -> https://...run.app/prices
+        destination: 'https://price-api-306428363316.us-central1.run.app/:path*', 
       },
     ]
   },
